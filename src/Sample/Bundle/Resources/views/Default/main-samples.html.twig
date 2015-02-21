@@ -17,8 +17,8 @@
 	Module: Sample<br>
 	Controller: Index<br>
 	Action: View
-	<br>which can be accessed Simple: <a href="{{asset('bundles/sample')}}/sample">{{asset('bundles/sample')}}/sample</a> or with full address: <a href="{{asset('bundles/sample')}}/sample/index/view">{{asset('bundles/sample')}}/sample/index/view</a><br>
-	This page calls in background another page via Ajax: <a href="{{asset('bundles/sample')}}/sample/index/json">{{asset('bundles/sample')}}/sample/index/json</a><br>
+	<br>which can be accessed Simple: <a href="{{url('sample')}}main-samples">{{url('sample')}}main-samples</a><br>
+	This page calls in background another page via Ajax: <a href="{{url('sample')}}json">{{url('sample')}}json</a><br>
 	JSON Call Result: [ <span id="json-test"></span> ]<br>
 	Unicode-Test from JSON: [ <span id="unicode-test-from-json" style="color:#778899;"></span> ]
 	<hr>

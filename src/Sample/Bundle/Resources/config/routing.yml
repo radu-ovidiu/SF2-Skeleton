@@ -4,7 +4,7 @@ sample:
 
 sample_module:
     path:     /main-samples/{mode}/{extra}
-    defaults: { _controller: SampleBundle:Default:mainsamples, mode:'', extra:'' }
+    defaults: { _controller: SampleBundle:Default:mainsamples, mode:'default', extra:'default' }
 
 sample_bootstrap:
     path:     /bootstrap-samples

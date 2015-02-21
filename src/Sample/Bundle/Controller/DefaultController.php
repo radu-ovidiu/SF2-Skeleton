@@ -22,7 +22,7 @@ class DefaultController extends Controller {
 			'SampleBundle:Default:index.html.twig',
 			array(
 				'app_title' => 'Sample Module',
-				'symfony_version' => '2.6.4' // this must get real version !!
+				'symfony_version' => \Symfony\Component\HttpKernel\Kernel::VERSION
 			)
 		);
 
