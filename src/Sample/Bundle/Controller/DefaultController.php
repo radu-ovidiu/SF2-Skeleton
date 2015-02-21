@@ -10,6 +10,7 @@ sample:
 
 namespace Sample\Bundle\Controller;
 
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 
@@ -29,15 +30,26 @@ class DefaultController extends Controller {
 	} //END FUNCTION
 
 
-	public function mainsamplesAction($mode, $extra) {
+	public function mainsamplesAction(Request $request, $mode, $extra) {
+
+		if(((string)$mode == 'sqlite3') AND ((string)$extra == 'list')) {
+			$data = array();
+			$data[] = array(
+				'id' => '1',
+				'name' => 'Name "1"',
+				'description' => "Description '1'"
+			);
+		} else {
+			$data = array();
+		} //end if else
 
 		return $this->render(
 			'SampleBundle:Default:main-samples.html.twig',
 			array(
 				'title' => 'Sample Module',
-				'mode' => $mode,
+				'mode' => $request->get('mode'), // or can use $mode
 				'extra' => $extra,
-				'data' => array()
+				'data' => $data
 			)
 		);
 
