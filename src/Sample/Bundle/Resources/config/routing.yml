@@ -1,0 +1,15 @@
+sample:
+    path:     /
+    defaults: { _controller: SampleBundle:Default:index }
+
+sample_module:
+    path:     /main-samples/{mode}/{extra}
+    defaults: { _controller: SampleBundle:Default:mainsamples, mode:'', extra:'' }
+
+sample_bootstrap:
+    path:     /bootstrap-samples
+    defaults: { _controller: SampleBundle:Default:bootstrapsamples }
+
+sample_json:
+    path:     /json/{mode}
+    defaults: { _controller: SampleBundle:Default:json, mode:default }

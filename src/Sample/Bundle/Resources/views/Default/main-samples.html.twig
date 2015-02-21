@@ -1,0 +1,264 @@
+{% extends 'SampleBundle:Default:layout.html.twig' %}
+{% block styles %}
+	{{parent()}}
+	<link href="{{asset('bundles/sample')}}/js/ui/themes/bootstrap/jquery-ui.min.css" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block scripts %}
+	{{parent()}}
+	<script src="{{asset('bundles/sample')}}/js/ui/jquery-ui.min.js" type="text/javascript"></script>
+{% endblock %}
+{% block content %}
+	<h1>{{title}}</h1>
+	<h3>URL Params</h3>
+	1st-param: mode={{mode}}<br>
+	2nd-param: extra={{extra}}<br>
+	<hr>
+	<h3>Meta-Info</h3>
+	Module: Sample<br>
+	Controller: Index<br>
+	Action: View
+	<br>which can be accessed Simple: <a href="{{asset('bundles/sample')}}/sample">{{asset('bundles/sample')}}/sample</a> or with full address: <a href="{{asset('bundles/sample')}}/sample/index/view">{{asset('bundles/sample')}}/sample/index/view</a><br>
+	This page calls in background another page via Ajax: <a href="{{asset('bundles/sample')}}/sample/index/json">{{asset('bundles/sample')}}/sample/index/json</a><br>
+	JSON Call Result: [ <span id="json-test"></span> ]<br>
+	Unicode-Test from JSON: [ <span id="unicode-test-from-json" style="color:#778899;"></span> ]
+	<hr>
+	<script type="text/javascript">
+	$(function(){
+		$.ajax({
+			async: true,
+			cache: false,
+			timeout: 0,
+			type: 'GET',
+			url: '{{url('sample')}}json',
+			//--
+			data: '',
+			dataType: 'json',
+			//--
+			success: function(msg) {
+				if(msg.status == 'OK') {
+					$('#json-test').css({ 'color':'#66B404' }).html('<b>' + Uxm_Utils.escape_html(msg.message) + '</b>' + '<' + 'script' +'>' + 'setTimeout(function(){ $("#unicode-test-from-json").text("' + Uxm_Utils.escape_js(msg.unicode_test) + '"); }, 500);' + '<' + '/script' + '>');
+				} else {
+					$('#json-test').css({ 'color':'#FF5500' }).html('<b><i>JSON page Status is NOT OK</i></b>');
+				} //end if else
+			},
+			error: function(msg) {
+				alert('JSON page Test Failed !');
+			}
+		});
+	});
+	</script>
+	{% if data|length > 0 %}
+		{% if extra == 'count' %}
+			<a href="{{asset('bundles/sample')}}/sample/index/view/sqlite3/list">View the SQLite3 List Sample</a><br>
+			<h4>There are <b>#[{{data[0].total}}]</b> rows in the SQLite3 Table</h4>
+		{% else %}
+			<a href="{{asset('bundles/sample')}}/sample/index/view/sqlite3/count">View the SQLite3 Count Sample</a><br><br>
+			<link rel="stylesheet" type="text/css" href="{{asset('bundles/sample')}}/js/bootstrap-table/bootstrap-table.min.css">
+			<script src="{{asset('bundles/sample')}}/js/bootstrap-table/bootstrap-table.min.js" type="text/javascript"></script>
+			<table id="datatable" border="0" data-toggle="table" data-sort-name="name" data-sort-order="asc" width="100%">
+				<thead>
+					<tr>
+						<th data-field="id" data-sortable="false" data-width="50">#</th>
+						<th data-field="name" data-sortable="true" data-width="200">Name</th>
+						<th data-field="description" data-sortable="true">Description</th>
+					</tr>
+				</thead>
+				<tbody>
+			{% for row in data %}
+				<tr>
+					<td>{{row.id}}</td>
+					<td>{{row.name}}</td>
+					<td>{{row.description}}</td>
+				</tr>
+			{% endfor %}
+				</tbody>
+			</table>
+		{% endif %}
+	{% else %}
+		<a href="{{asset('bundles/sample')}}/sample/index/view/sqlite3/list">View the SQLite3 List Sample</a><br>
+		<a href="{{asset('bundles/sample')}}/sample/index/view/sqlite3/count">View the SQLite3 Count Sample</a><br>
+		<hr>
+		<h1>jQueryUI Components TEST</h1>
+		<a href="http://jqueryui.com/themeroller/#themeGallery" target="_blank">Roll your own jQueryUI visual Theme using the online ThereRoller ...</a><br>
+		<!-- Autocomplete -->
+		<h2 class="demoHeaders">Autocomplete</h2>
+		<div>
+			<input type="text" id="autocomplete" title="type &quot;a&quot;">
+		</div>
+		<!-- Button -->
+		<h2 class="demoHeaders">Button</h2>
+		<button id="button">A button element (click to open a Dialog)</button>
+		<form style="margin-top: 1em;">
+			<div id="radioset">
+				<input type="radio" id="radio1" name="radio"><label for="radio1">Choice 1</label>
+				<input type="radio" id="radio2" name="radio" checked="checked"><label for="radio2">Choice 2</label>
+				<input type="radio" id="radio3" name="radio"><label for="radio3">Choice 3</label>
+			</div>
+		</form>
+		<!-- Tabs -->
+		<h2 class="demoHeaders">Tabs</h2>
+		<div id="tabs">
+			<ul>
+				<li><a href="#tabs-1">First</a></li>
+				<li><a href="#tabs-2">Second</a></li>
+				<li><a href="#tabs-3">Third</a></li>
+			</ul>
+			<div id="tabs-1">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</div>
+			<div id="tabs-2">Phasellus mattis tincidunt nibh. Cras orci urna, blandit id, pretium vel, aliquet ornare, felis. Maecenas scelerisque sem non nisl. Fusce sed lorem in enim dictum bibendum.</div>
+			<div id="tabs-3">Nam dui erat, auctor a, dignissim quis, sollicitudin eu, felis. Pellentesque nisi urna, interdum eget, sagittis et, consequat vestibulum, lacus. Mauris porttitor ullamcorper augue.</div>
+		</div>
+		<!-- Slider -->
+		<h2 class="demoHeaders">Slider</h2>
+		<div id="slider"></div>
+		<!-- Datepicker -->
+		<h2 class="demoHeaders">Datepicker</h2>
+		<div id="datepicker"></div>
+		<!-- Progressbar -->
+		<h2 class="demoHeaders">Progressbar</h2>
+		<div id="progressbar"></div>
+		<!-- Progressbar -->
+		<h2 class="demoHeaders">Selectmenu</h2>
+		<select id="selectmenu" style="width:200px;">
+			<option>Slower</option>
+			<option>Slow</option>
+			<option selected="selected">Medium</option>
+			<option>Fast</option>
+			<option>Faster</option>
+		</select>
+		<!-- Spinner -->
+		<h2 class="demoHeaders">Spinner</h2>
+		<input id="spinner">
+		<!-- Menu -->
+		<h2 class="demoHeaders">Menu</h2>
+		<ul style="width:200px;" id="menu">
+			<li>Item 1</li>
+			<li>Item 2</li>
+			<li>Item 3
+				<ul style="width:150px;">
+					<li>Item 3-1</li>
+					<li>Item 3-2</li>
+					<li>Item 3-3</li>
+					<li>Item 3-4</li>
+					<li>Item 3-5</li>
+				</ul>
+			</li>
+			<li>Item 4</li>
+			<li>Item 5</li>
+		</ul>
+		<!-- Tooltip -->
+		<h2 class="demoHeaders">Tooltip</h2>
+		<p id="tooltip">
+			<a href="#" title="That&apos;s what this widget is">Tooltips</a> can be attached to any element. When you hover
+		the element with your mouse, the title attribute is displayed in a little box next to the element, just like a native tooltip.
+		</p>
+		<!-- Highlight / Error -->
+		<h2 class="demoHeaders">Highlight / Error</h2>
+		<div class="ui-widget">
+			<div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: .7em;">
+				<p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+				<strong>Hey!</strong> Sample ui-state-highlight style.</p>
+			</div>
+		</div>
+		<br>
+		<div class="ui-widget">
+			<div class="ui-state-error ui-corner-all" style="padding: .7em;">
+				<p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+				<strong>Alert:</strong> Sample ui-state-error style.</p>
+			</div>
+		</div>
+		<script type="text/javascript">
+			//--
+			$( "#accordion" ).accordion();
+			//--
+			var availableTags = [
+				"ActionScript",
+				"AppleScript",
+				"Asp",
+				"BASIC",
+				"C",
+				"C++",
+				"Clojure",
+				"COBOL",
+				"ColdFusion",
+				"Erlang",
+				"Fortran",
+				"Groovy",
+				"Haskell",
+				"Java",
+				"JavaScript",
+				"Lisp",
+				"Perl",
+				"PHP",
+				"Python",
+				"Ruby",
+				"Scala",
+				"Scheme"
+			];
+			$("#autocomplete").autocomplete({
+				source: availableTags
+			});
+			//--
+			$("#button").button();
+			$("#button").click(function( event ) {
+				var TheMsgDialog = $('<div></div>').html('Hi, This is a jQueryUI Dialog').dialog({autoOpen:false});
+				TheMsgDialog.dialog({
+					title: 'Sample Dialog',
+					resizable: false,
+					width: 500,
+					height: 200,
+					position: { my: 'center top+70', at: 'center top', of: window },
+					modal: true,
+					closeOnEscape: false,
+					open: function(event, ui){ $(this).parent().find('.ui-dialog-titlebar-close').hide(); },
+					buttons: {
+						'OK': {
+							text: 'OK',
+							icons: { primary: 'ui-icon-check' },
+							click: function() {
+								$(this).dialog('close');
+								$(this).dialog('destroy');
+								$(this).remove();
+							}
+						}
+					}
+				});
+				TheMsgDialog.dialog('open');
+			});
+			//--
+			$("#radioset").buttonset();
+			//--
+			$("#tabs").tabs();
+			//--
+			$("#datepicker").datepicker({
+				inline: true
+			});
+			//--
+			$("#slider").slider({
+				range: true,
+				values: [ 17, 67 ]
+			});
+			//--
+			$("#progressbar").progressbar({
+				value: 20
+			});
+			//--
+			$("#spinner").spinner();
+			//--
+			$("#menu").menu();
+			//--
+			$("#tooltip").tooltip();
+			//--
+			$("#selectmenu").selectmenu();
+			//-- Hover states on the static widgets
+			$("#dialog-link, #icons li").hover(
+				function() {
+					$(this).addClass("ui-state-hover");
+				},
+				function() {
+					$(this).removeClass("ui-state-hover");
+				}
+			);
+			//--
+		</script>
+	{% endif %}
+{% endblock %}

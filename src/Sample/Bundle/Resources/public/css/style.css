@@ -1,0 +1,22 @@
+/* Base CSS */
+
+body {
+    padding-top: 60px;
+    padding-bottom: 40px;
+}
+
+.row {
+  margin-bottom: 20px;
+}
+.row .row {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+[class*="col-"] {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  background-color: #FFFFFF;
+  border: 1px solid #ECECEC;
+}
+
+/* END */

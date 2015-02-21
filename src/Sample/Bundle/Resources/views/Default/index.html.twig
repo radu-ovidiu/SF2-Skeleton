@@ -1,0 +1,55 @@
+{% extends 'SampleBundle:Default:layout.html.twig' %}
+{% block content %}
+<div class="jumbotron">
+	<h1><span>{{ 'Welcome to SF2 / Smart Skeleton' }}</span></h1>
+	<p>SF2 version {{ symfony_version }} Skeleton Application with Twig Renderer version {{ constant('Twig_Environment::VERSION') }}</a></p>
+</div>
+<h2>Quick CheatSheet</h2>
+<div class="row">
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Request and Response object</h3>
+			</div>
+			<div class="panel-body">
+<pre>
+$request->query->get('foo'); //gets foo GET var.
+$request->request->get('bar'); //gets POST var.
+$request->getMethod();
+$request->server->get('HTTP_HOST'); //server variables.
+$request->getPathInfo(); //gets the URI.
+$request->files->get('file'); //files posted in a form.
+$request->headers->get('content-type');
+$request->cookies->get('PHPSESSID'); //cookies
+$request->getLanguages();
+$request->getPreferedLanguage(array('en','fr'));
+$request->isXmlHttpRequest();
+</pre>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title">Redirections and Session</h3>
+			</div>
+			<div class="panel-body">
+<pre>
+//-- Redirecting in a controller
+$this->redirect($this->generateUrl("homepage"));
+//-- Forwarding
+$this->forward('Bundle:Controller:Action');
+//-- Session Howto
+$this->get('session');
+$session->get('foo','default value');
+$session->set('foo','bar');
+</pre>
+			</div>
+		</div>
+	</div>
+</div>
+<h3>Create a New Module</h3>
+<pre>
+php app/console generate:bundle --namespace=Mymodule/Bundle --format=yml
+</pre>
+{% endblock %}
