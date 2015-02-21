@@ -32,13 +32,19 @@ class DefaultController extends Controller {
 
 	public function mainsamplesAction(Request $request, $mode, $extra) {
 
-		if(((string)$mode == 'sqlite3') AND ((string)$extra == 'list')) {
+		if((string)$mode == 'sqlite3') {
 			$data = array();
-			$data[] = array(
-				'id' => '1',
-				'name' => 'Name "1"',
-				'description' => "Description '1'"
-			);
+			if((string)$extra == 'list') {
+				$data[] = array(
+					'id' => '1',
+					'name' => 'Name "1"',
+					'description' => "Description '1'"
+				);
+			} else {
+				$data[] = array(
+					'total' => '1'
+				);
+			} //end if else
 		} else {
 			$data = array();
 		} //end if else
