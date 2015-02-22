@@ -1,15 +1,20 @@
+
+homepage:
+    pattern:   /
+    defaults:  { _controller: SampleBundle:Default:index }
+
 sample:
-    path:     /
+    path:     /sample
     defaults: { _controller: SampleBundle:Default:index }
 
 sample_module:
-    path:     /main-samples/{mode}/{extra}
+    path:     /sample/main-samples/{mode}/{extra}
     defaults: { _controller: SampleBundle:Default:mainsamples, mode:'default', extra:'default' }
 
 sample_bootstrap:
-    path:     /bootstrap-samples
+    path:     /sample/bootstrap-samples
     defaults: { _controller: SampleBundle:Default:bootstrapsamples }
 
 sample_json:
-    path:     /json/{mode}
+    path:     /sample/json/{mode}
     defaults: { _controller: SampleBundle:Default:json, mode:default }

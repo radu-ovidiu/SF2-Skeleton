@@ -1,6 +1,5 @@
 sample:
     resource: "@SampleBundle/Resources/config/routing.yml"
-    prefix:   /sample
 
 app:
     resource: @AppBundle/Controller/
