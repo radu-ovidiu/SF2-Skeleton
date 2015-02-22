@@ -1,7 +1,10 @@
 
-homepage:
-    pattern:   /
-    defaults:  { _controller: SampleBundle:Default:index }
+# default homepage
+_welcome:
+    pattern: /
+    defaults: { _controller: SampleBundle:Default:index }
+
+# module pages
 
 sample:
     path:     /sample
@@ -18,3 +21,5 @@ sample_bootstrap:
 sample_json:
     path:     /sample/json/{mode}
     defaults: { _controller: SampleBundle:Default:json, mode:default }
+
+# end
