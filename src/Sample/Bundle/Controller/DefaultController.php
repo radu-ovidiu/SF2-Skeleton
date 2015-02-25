@@ -45,7 +45,7 @@ class DefaultController extends Controller {
 				$count = $model->writeQuery('UPDATE table_main_sample SET dtime = ? WHERE id < ?', array(date('Y-m-d H:i:s O'), '9'));
 				$data = $model->readQuery('SELECT * FROM table_main_sample WHERE id < ?', array('9'));
 			} else {
-				$count = $model->countQuery('SELECT COUNT(1) as total FROM table_main_sample');
+				$count = $model->countQuery('SELECT COUNT(1) FROM table_main_sample');
 			} //end if else
 		} //end if
 
