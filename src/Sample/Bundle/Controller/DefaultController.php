@@ -1,11 +1,11 @@
 <?php
+// Symfony2 Module / Controller :: Sample
+// author: radu-ovidiu
+// 2015-02-25
 
 /* Add in app/config/routing.yml :
-
-sample:
+main:
     resource: "@SampleBundle/Resources/config/routing.yml"
-    prefix:   /sample
-
 */
 
 namespace Sample\Bundle\Controller;
@@ -15,6 +15,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 
 class DefaultController extends Controller {
+
+
+	public function getConfigurationParameter($parameter) {
+		return $this->container->getParameter((string)$parameter);
+	} //END FUNCTION
 
 
 	public function indexAction() {
@@ -32,22 +37,17 @@ class DefaultController extends Controller {
 
 	public function mainsamplesAction(Request $request, $mode, $extra) {
 
+		$data = array();
+		$count = 0;
 		if((string)$mode == 'sqlite3') {
-			$data = array();
+			$model = new \Sample\Bundle\Model\DefaultModel($this);
 			if((string)$extra == 'list') {
-				$data[] = array(
-					'id' => '1',
-					'name' => 'Name "1"',
-					'description' => "Description '1'"
-				);
+				$count = $model->writeQuery('UPDATE table_main_sample SET dtime = ? WHERE id < ?', array(date('Y-m-d H:i:s O'), '9'));
+				$data = $model->readQuery('SELECT * FROM table_main_sample WHERE id < ?', array('9'));
 			} else {
-				$data[] = array(
-					'total' => '1'
-				);
+				$count = $model->countQuery('SELECT COUNT(1) as total FROM table_main_sample');
 			} //end if else
-		} else {
-			$data = array();
-		} //end if else
+		} //end if
 
 		return $this->render(
 			'SampleBundle:Default:main-samples.html.twig',
@@ -55,7 +55,8 @@ class DefaultController extends Controller {
 				'title' => 'Sample Module',
 				'mode' => $request->get('mode'), // or can use $mode
 				'extra' => $extra,
-				'data' => $data
+				'data' => $data,
+				'count' => $count
 			)
 		);
 

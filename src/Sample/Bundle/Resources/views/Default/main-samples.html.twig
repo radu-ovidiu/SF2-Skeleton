@@ -47,20 +47,22 @@
 		});
 	});
 	</script>
-	{% if data|length > 0 %}
+	{% if mode == 'sqlite3' %}
 		{% if extra == 'count' %}
 			<a href="{{url('sample')}}/main-samples/sqlite3/list">View the SQLite3 List Sample</a><br>
-			<h4>There are <b>#[{{data[0].total}}]</b> rows in the SQLite3 Table</h4>
+			<h4>There are <b>#[{{count}}]</b> Total rows in the SQLite3 Table</h4>
 		{% else %}
 			<a href="{{url('sample')}}/main-samples/sqlite3/count">View the SQLite3 Count Sample</a><br><br>
 			<link rel="stylesheet" type="text/css" href="{{asset('bundles/sample')}}/js/bootstrap-table/bootstrap-table.min.css">
 			<script src="{{asset('bundles/sample')}}/js/bootstrap-table/bootstrap-table.min.js" type="text/javascript"></script>
+			<h4>Updated <b>#{{count}}</b> rows with current DateTime ..., listed only rows with ID &lt; 9</h4>
 			<table id="datatable" border="0" data-toggle="table" data-sort-name="name" data-sort-order="asc" width="100%">
 				<thead>
 					<tr>
 						<th data-field="id" data-sortable="false" data-width="50">#</th>
 						<th data-field="name" data-sortable="true" data-width="200">Name</th>
 						<th data-field="description" data-sortable="true">Description</th>
+						<th data-field="description" data-sortable="true">Date/Time</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -69,6 +71,7 @@
 					<td>{{row.id}}</td>
 					<td>{{row.name}}</td>
 					<td>{{row.description}}</td>
+					<td>{{row.dtime}}</td>
 				</tr>
 			{% endfor %}
 				</tbody>
