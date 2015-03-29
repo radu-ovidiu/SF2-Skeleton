@@ -22,4 +22,8 @@ sample_json:
     path:     /sample/json/{mode}
     defaults: { _controller: SampleBundle:Default:json, mode:default }
 
+benchmark:
+    path:     /sample/benchmark
+    defaults: { _controller: SampleBundle:Default:benchmark }
+
 # end

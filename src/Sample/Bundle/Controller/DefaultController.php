@@ -92,6 +92,17 @@ class DefaultController extends Controller {
 	} //END FUNCTION
 
 
+	public function benchmarkAction() {
+
+		return $this->render(
+			'SampleBundle:Default:benchmark.html.twig',
+			array(
+			)
+		);
+
+	} //END FUNCTION
+
+
 } //END CLASS
 
 //end php code
