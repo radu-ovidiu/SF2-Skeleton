@@ -15,6 +15,12 @@
 		{% block scripts %}
 		<script type="text/javascript" src="{{asset('bundles/sample')}}/js/uxm-utils.min.js"></script>
 		<script type="text/javascript" src="{{asset('bundles/sample')}}/js/jquery.min.js"></script>
+		<script type="text/javascript">
+		$.ajaxSetup({
+			async: true, cache: false, timeout: 0,
+			headers: {"X-Requested-With":"XMLHttpRequest"}
+		});
+		</script>
 		<script type="text/javascript" src="{{asset('bundles/sample')}}/js/bootstrap/bootstrap.min.js"></script>
 		{% endblock %}
 	</head>
