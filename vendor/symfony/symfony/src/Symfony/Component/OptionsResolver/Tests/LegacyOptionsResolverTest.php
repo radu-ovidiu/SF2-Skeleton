@@ -80,6 +80,21 @@ class LegacyOptionsResolverTest extends \PHPUnit_Framework_TestCase
         ), $this->resolver->resolve(array()));
     }
 
+    public function testTypeAliasesForAllowedTypes()
+    {
+        $this->resolver->setDefaults(array(
+            'force' => false,
+        ));
+
+        $this->resolver->setAllowedTypes(array(
+            'force' => 'boolean',
+        ));
+
+        $this->resolver->resolve(array(
+            'force' => true,
+        ));
+    }
+
     public function testResolveLazyDependencyOnOptional()
     {
         $this->resolver->setDefaults(array(
@@ -194,7 +209,8 @@ class LegacyOptionsResolverTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Symfony\Component\OptionsResolver\Exception\UndefinedOptionsException
+     * @expectedException        \Symfony\Component\OptionsResolver\Exception\UndefinedOptionsException
+     * @expectedExceptionMessage The option "foo" does not exist. Defined options are: "one", "three", "two".
      */
     public function testResolveFailsIfNonExistingOption()
     {

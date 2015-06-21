@@ -21,7 +21,7 @@ use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToStringTransf
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToTimestampTransformer;
 use Symfony\Component\Form\ReversedTransformer;
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 
 class DateType extends AbstractType
@@ -165,7 +165,7 @@ class DateType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $compound = function (Options $options) {
             return $options['widget'] !== 'single_text';
@@ -224,31 +224,25 @@ class DateType extends AbstractType
             'compound' => $compound,
         ));
 
-        $resolver->setNormalizers(array(
-            'empty_value' => $placeholderNormalizer,
-            'placeholder' => $placeholderNormalizer,
+        $resolver->setNormalizer('empty_value', $placeholderNormalizer);
+        $resolver->setNormalizer('placeholder', $placeholderNormalizer);
+
+        $resolver->setAllowedValues('input', array(
+            'datetime',
+            'string',
+            'timestamp',
+            'array',
+        ));
+        $resolver->setAllowedValues('widget', array(
+            'single_text',
+            'text',
+            'choice',
         ));
 
-        $resolver->setAllowedValues(array(
-            'input' => array(
-                'datetime',
-                'string',
-                'timestamp',
-                'array',
-            ),
-            'widget' => array(
-                'single_text',
-                'text',
-                'choice',
-            ),
-        ));
-
-        $resolver->setAllowedTypes(array(
-            'format' => array('int', 'string'),
-            'years' => 'array',
-            'months' => 'array',
-            'days' => 'array',
-        ));
+        $resolver->setAllowedTypes('format', array('int', 'string'));
+        $resolver->setAllowedTypes('years', 'array');
+        $resolver->setAllowedTypes('months', 'array');
+        $resolver->setAllowedTypes('days', 'array');
     }
 
     /**

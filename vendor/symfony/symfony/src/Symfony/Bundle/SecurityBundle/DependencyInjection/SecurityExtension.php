@@ -100,7 +100,6 @@ class SecurityExtension extends Extension
         // add some required classes for compilation
         $this->addClassesToCompile(array(
             'Symfony\\Component\\Security\\Http\\Firewall',
-            'Symfony\\Component\\Security\\Core\\SecurityContext',
             'Symfony\\Component\\Security\\Core\\User\\UserProviderInterface',
             'Symfony\\Component\\Security\\Core\\Authentication\\AuthenticationProviderManager',
             'Symfony\\Component\\Security\\Core\\Authentication\\Token\\Storage\\TokenStorage',
@@ -337,9 +336,9 @@ class SecurityExtension extends Extension
                 $listener->addMethodCall('addHandler', array(new Reference($handlerId)));
             }
 
-            // register with LogoutUrlHelper
+            // register with LogoutUrlGenerator
             $container
-                ->getDefinition('templating.helper.logout_url')
+                ->getDefinition('security.logout_url_generator')
                 ->addMethodCall('registerListener', array(
                     $id,
                     $firewall['logout']['path'],

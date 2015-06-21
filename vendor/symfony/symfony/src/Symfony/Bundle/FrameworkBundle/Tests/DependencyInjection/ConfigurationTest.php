@@ -86,6 +86,28 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
+    /**
+     * @expectedException \Symfony\Component\Config\Definition\Exception\InvalidConfigurationException
+     * @expectedExceptionMessage You cannot use assets settings under "framework.templating" and "assets" configurations in the same project.
+     * @group legacy
+     */
+    public function testLegacyInvalidValueAssets()
+    {
+        $this->iniSet('error_reporting', -1 & ~E_USER_DEPRECATED);
+
+        $processor = new Processor();
+        $configuration = new Configuration(true);
+        $processor->processConfiguration($configuration, array(
+            array(
+                'templating' => array(
+                    'engines' => null,
+                    'assets_base_urls' => '//example.com',
+                ),
+                'assets' => null,
+            ),
+        ));
+    }
+
     protected static function getBundleDefaultConfig()
     {
         return array(
@@ -131,7 +153,6 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'static_method' => array('loadValidatorMetadata'),
                 'translation_domain' => 'validators',
                 'strict_email' => false,
-                'api' => PHP_VERSION_ID < 50309 ? '2.4' : '2.5-bc',
             ),
             'annotations' => array(
                 'cache' => 'file',
@@ -140,10 +161,18 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             ),
             'serializer' => array(
                 'enabled' => false,
+                'enable_annotations' => false,
             ),
             'property_access' => array(
                 'magic_call' => false,
                 'throw_exception_on_invalid_index' => false,
+            ),
+            'assets' => array(
+                'version' => null,
+                'version_format' => '%%s?%%s',
+                'base_path' => '',
+                'base_urls' => array(),
+                'packages' => array(),
             ),
         );
     }

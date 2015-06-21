@@ -11,8 +11,8 @@
 
 namespace Symfony\Bundle\FrameworkBundle\Command;
 
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Translation\Catalogue\MergeOperation;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -44,16 +44,16 @@ class TranslationDebugCommand extends ContainerAwareCommand
             ))
             ->setDefinition(array(
                 new InputArgument('locale', InputArgument::REQUIRED, 'The locale'),
-                new InputArgument('bundle', InputArgument::REQUIRED, 'The bundle name'),
+                new InputArgument('bundle', InputArgument::OPTIONAL, 'The bundle name or directory where to load the messages, defaults to app/Resources folder'),
                 new InputOption('domain', null, InputOption::VALUE_OPTIONAL, 'The messages domain'),
                 new InputOption('only-missing', null, InputOption::VALUE_NONE, 'Displays only missing messages'),
                 new InputOption('only-unused', null, InputOption::VALUE_NONE, 'Displays only unused messages'),
             ))
-            ->setDescription('Displays translation messages informations')
+            ->setDescription('Displays translation messages information')
             ->setHelp(<<<EOF
 The <info>%command.name%</info> command helps finding unused or missing translation
 messages and comparing them with the fallback ones by inspecting the
-templates and translation files of a given bundle.
+templates and translation files of a given bundle or the app folder.
 
 You can display information about bundle translations in a specific locale:
 
@@ -71,6 +71,10 @@ You can only display unused messages:
 
   <info>php %command.full_name% --only-unused en AcmeDemoBundle</info>
 
+You can display information about app translations in a specific locale:
+
+  <info>php %command.full_name% en</info>
+
 EOF
             )
         ;
@@ -81,19 +85,46 @@ EOF
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output = new SymfonyStyle($input, $output);
+        if (false !== strpos($input->getFirstArgument(), ':d')) {
+            $output->caution('The use of "translation:debug" command is deprecated since version 2.7 and will be removed in 3.0. Use the "debug:translation" instead.');
+        }
+
         $locale = $input->getArgument('locale');
         $domain = $input->getOption('domain');
-        $bundle = $this->getContainer()->get('kernel')->getBundle($input->getArgument('bundle'));
         $loader = $this->getContainer()->get('translation.loader');
+        $kernel = $this->getContainer()->get('kernel');
+
+        // Define Root Path to App folder
+        $rootPath = $kernel->getRootDir();
+
+        // Override with provided Bundle info
+        if (null !== $input->getArgument('bundle')) {
+            try {
+                $rootPath = $kernel->getBundle($input->getArgument('bundle'))->getPath();
+            } catch (\InvalidArgumentException $e) {
+                // such a bundle does not exist, so treat the argument as path
+                $rootPath = $input->getArgument('bundle');
+
+                if (!is_dir($rootPath)) {
+                    throw new \InvalidArgumentException(sprintf('"%s" is neither an enabled bundle nor a directory.', $rootPath));
+                }
+            }
+        }
+
+        // get bundle directory
+        $translationsPath = $rootPath.'/Resources/translations';
 
         // Extract used messages
         $extractedCatalogue = new MessageCatalogue($locale);
-        $this->getContainer()->get('translation.extractor')->extract($bundle->getPath().'/Resources/views', $extractedCatalogue);
+        if (is_dir($rootPath.'/Resources/views')) {
+            $this->getContainer()->get('translation.extractor')->extract($rootPath.'/Resources/views', $extractedCatalogue);
+        }
 
         // Load defined messages
         $currentCatalogue = new MessageCatalogue($locale);
-        if (is_dir($bundle->getPath().'/Resources/translations')) {
-            $loader->loadMessages($bundle->getPath().'/Resources/translations', $currentCatalogue);
+        if (is_dir($translationsPath)) {
+            $loader->loadMessages($translationsPath, $currentCatalogue);
         }
 
         // Merge defined and extracted messages to get all message ids
@@ -105,13 +136,13 @@ EOF
 
         // No defined or extracted messages
         if (empty($allMessages) || null !== $domain && empty($allMessages[$domain])) {
-            $outputMessage = sprintf('<info>No defined or extracted messages for locale "%s"</info>', $locale);
+            $outputMessage = sprintf('No defined or extracted messages for locale "%s"', $locale);
 
             if (null !== $domain) {
-                $outputMessage .= sprintf(' <info>and domain "%s"</info>', $domain);
+                $outputMessage .= sprintf(' and domain "%s"', $domain);
             }
 
-            $output->writeln($outputMessage);
+            $output->warning($outputMessage);
 
             return;
         }
@@ -126,24 +157,17 @@ EOF
                 }
 
                 $fallbackCatalogue = new MessageCatalogue($fallbackLocale);
-                $loader->loadMessages($bundle->getPath().'/Resources/translations', $fallbackCatalogue);
+                $loader->loadMessages($translationsPath, $fallbackCatalogue);
                 $fallbackCatalogues[] = $fallbackCatalogue;
             }
         }
 
-        if (class_exists('Symfony\Component\Console\Helper\Table')) {
-            $table = new Table($output);
-        } else {
-            $table = $this->getHelperSet()->get('table');
-        }
-
         // Display header line
-        $headers = array('State(s)', 'Id', sprintf('Message Preview (%s)', $locale));
+        $headers = array('State', 'Domain', 'Id', sprintf('Message Preview (%s)', $locale));
         foreach ($fallbackCatalogues as $fallbackCatalogue) {
             $headers[] = sprintf('Fallback Message Preview (%s)', $fallbackCatalogue->getLocale());
         }
-        $table->setHeaders($headers);
-
+        $rows = array();
         // Iterate all message ids and determine their state
         foreach ($allMessages as $domain => $messages) {
             foreach (array_keys($messages) as $messageId) {
@@ -171,40 +195,30 @@ EOF
                     }
                 }
 
-                $row = array($this->formatStates($states), $this->formatId($messageId), $this->sanitizeString($value));
+                $row = array($this->formatStates($states), $domain, $this->formatId($messageId), $this->sanitizeString($value));
                 foreach ($fallbackCatalogues as $fallbackCatalogue) {
                     $row[] = $this->sanitizeString($fallbackCatalogue->get($messageId, $domain));
                 }
 
-                $table->addRow($row);
+                $rows[] = $row;
             }
         }
 
-        if (class_exists('Symfony\Component\Console\Helper\Table')) {
-            $table->render();
-        } else {
-            $table->render($output);
-        }
-
-        $output->writeln('');
-        $output->writeln('<info>Legend:</info>');
-        $output->writeln(sprintf(' %s Missing message', $this->formatState(self::MESSAGE_MISSING)));
-        $output->writeln(sprintf(' %s Unused message', $this->formatState(self::MESSAGE_UNUSED)));
-        $output->writeln(sprintf(' %s Same as the fallback message', $this->formatState(self::MESSAGE_EQUALS_FALLBACK)));
+        $output->table($headers, $rows);
     }
 
     private function formatState($state)
     {
         if (self::MESSAGE_MISSING === $state) {
-            return '<fg=red>x</>';
+            return '<error>missing</error>';
         }
 
         if (self::MESSAGE_UNUSED === $state) {
-            return '<fg=yellow>o</>';
+            return '<comment>unused</comment>';
         }
 
         if (self::MESSAGE_EQUALS_FALLBACK === $state) {
-            return '<fg=green>=</>';
+            return '<info>fallback</info>';
         }
 
         return $state;

@@ -36,7 +36,7 @@ class LegacyOptionsTest extends \PHPUnit_Framework_TestCase
         $test = $this;
 
         $this->options->set('foo', function (Options $options) use ($test) {
-           return 'dynamic';
+            return 'dynamic';
         });
 
         $this->assertEquals(array('foo' => 'dynamic'), $this->options->resolve());

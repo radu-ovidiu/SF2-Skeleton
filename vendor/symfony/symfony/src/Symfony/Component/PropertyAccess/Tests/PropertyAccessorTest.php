@@ -154,7 +154,7 @@ class PropertyAccessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getPathsWithUnexpectedType
      * @expectedException \Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException
-     * @expectedExceptionMessage Expected argument of type "object or array"
+     * @expectedExceptionMessage PropertyAccessor requires a graph of objects or arrays to operate on
      */
     public function testGetValueThrowsExceptionIfNotObjectOrArray($objectOrArray, $path)
     {
@@ -250,7 +250,7 @@ class PropertyAccessorTest extends \PHPUnit_Framework_TestCase
     /**
      * @dataProvider getPathsWithUnexpectedType
      * @expectedException \Symfony\Component\PropertyAccess\Exception\UnexpectedTypeException
-     * @expectedExceptionMessage Expected argument of type "object or array"
+     * @expectedExceptionMessage PropertyAccessor requires a graph of objects or arrays to operate on
      */
     public function testSetValueThrowsExceptionIfNotObjectOrArray($objectOrArray, $path)
     {
