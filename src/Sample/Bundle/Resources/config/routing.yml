@@ -1,7 +1,7 @@
 
 # default homepage
 _welcome:
-    pattern: /
+    path: /
     defaults: { _controller: SampleBundle:Default:index }
 
 # module pages
